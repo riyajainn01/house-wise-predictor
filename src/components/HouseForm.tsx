@@ -18,7 +18,7 @@ import { Slider } from "@/components/ui/slider";
 import { toast } from "sonner";
 import { useState } from "react";
 
-const API_URL = "http://10.11.16.89:5000";
+const API_URL = "https://housewisepredictor.onrender.com";
 
 const formSchema = z.object({
   bedrooms: z.number().min(1, "At least 1 bedroom required").max(10, "Maximum 10 bedrooms"),
