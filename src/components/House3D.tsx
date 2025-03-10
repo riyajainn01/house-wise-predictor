@@ -1,12 +1,13 @@
 
 import { useRef, useState, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
+import { OrbitControls, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 
 const HouseModel = ({ mousePosition }) => {
-  const house = useRef();
-  const roof = useRef();
+  // Properly type the refs as THREE.Group and THREE.Mesh
+  const house = useRef<THREE.Group>(null);
+  const roof = useRef<THREE.Group>(null);
   
   // Follow mouse with gentle easing
   useFrame(() => {
@@ -37,7 +38,7 @@ const HouseModel = ({ mousePosition }) => {
       {/* House base */}
       <mesh position={[0, 0, 0]} castShadow receiveShadow>
         <boxGeometry args={[3, 2, 2]} />
-        <meshStandardMaterial color="#ffffff" />
+        <meshStandardMaterial color="#f0f0f0" />
       </mesh>
       
       {/* Roof */}
@@ -46,22 +47,68 @@ const HouseModel = ({ mousePosition }) => {
           <coneGeometry args={[2.25, 1.5, 4]} />
           <meshStandardMaterial color="#8b5cf6" />
         </mesh>
+        
+        {/* Roof details */}
+        <mesh position={[0, 0.2, 0]} castShadow>
+          <coneGeometry args={[1.9, 0.5, 4]} />
+          <meshStandardMaterial color="#7c3aed" />
+        </mesh>
       </group>
       
+      {/* Front facade */}
+      <mesh position={[0, 0, 1.01]} castShadow>
+        <planeGeometry args={[3, 2]} />
+        <meshStandardMaterial color="#f5f5f5" />
+      </mesh>
+      
       {/* Door */}
-      <mesh position={[0, -0.5, 1.01]} castShadow>
-        <boxGeometry args={[0.8, 1, 0.1]} />
-        <meshStandardMaterial color="#5f4b32" />
+      <mesh position={[0, -0.5, 1.02]} castShadow>
+        <boxGeometry args={[0.8, 1, 0.05]} />
+        <meshStandardMaterial color="#8b5a2b" />
+      </mesh>
+      
+      {/* Door handle */}
+      <mesh position={[0.3, -0.5, 1.08]} castShadow>
+        <sphereGeometry args={[0.06]} />
+        <meshStandardMaterial color="#ffd700" metalness={0.8} roughness={0.2} />
       </mesh>
       
       {/* Windows */}
-      <mesh position={[-1, 0, 1.01]} castShadow>
-        <boxGeometry args={[0.6, 0.6, 0.1]} />
-        <meshStandardMaterial color="#a8d5ff" />
+      <mesh position={[-1, 0, 1.02]} castShadow>
+        <boxGeometry args={[0.6, 0.6, 0.05]} />
+        <meshStandardMaterial color="#a8d5ff" transparent opacity={0.9} />
       </mesh>
-      <mesh position={[1, 0, 1.01]} castShadow>
-        <boxGeometry args={[0.6, 0.6, 0.1]} />
-        <meshStandardMaterial color="#a8d5ff" />
+      <mesh position={[1, 0, 1.02]} castShadow>
+        <boxGeometry args={[0.6, 0.6, 0.05]} />
+        <meshStandardMaterial color="#a8d5ff" transparent opacity={0.9} />
+      </mesh>
+      
+      {/* Window frames */}
+      <mesh position={[-1, 0, 1.03]}>
+        <boxGeometry args={[0.7, 0.7, 0.01]} />
+        <meshStandardMaterial color="#ffffff" />
+      </mesh>
+      <mesh position={[1, 0, 1.03]}>
+        <boxGeometry args={[0.7, 0.7, 0.01]} />
+        <meshStandardMaterial color="#ffffff" />
+      </mesh>
+      
+      {/* Chimney */}
+      <mesh position={[-0.8, 1.5, -0.5]} castShadow>
+        <boxGeometry args={[0.4, 1, 0.4]} />
+        <meshStandardMaterial color="#c0c0c0" />
+      </mesh>
+      
+      {/* Garden base */}
+      <mesh position={[0, -1.05, 0]} receiveShadow>
+        <boxGeometry args={[5, 0.1, 3]} />
+        <meshStandardMaterial color="#4ade80" />
+      </mesh>
+      
+      {/* Path to house */}
+      <mesh position={[0, -1, 1.2]} receiveShadow rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[1, 1.2]} />
+        <meshStandardMaterial color="#d4d4d8" />
       </mesh>
     </group>
   );
