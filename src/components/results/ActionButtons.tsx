@@ -1,9 +1,12 @@
-
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Download, Share2, Home } from "lucide-react";
 
-const ActionButtons = () => {
+interface ActionButtonsProps {
+  onNewPrediction: () => void;
+}
+
+const ActionButtons = ({ onNewPrediction }: ActionButtonsProps) => {
   const handleDownloadReport = () => {
     // In a real app, this would generate and download a PDF report
     console.log("Downloading property report...");
@@ -30,10 +33,8 @@ const ActionButtons = () => {
 
   return (
     <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
-      <Button variant="outline" asChild>
-        <Link to="/predict" className="flex items-center">
-          <Home className="mr-2 h-4 w-4" /> Back to Form
-        </Link>
+      <Button variant="outline" onClick={onNewPrediction} className="flex items-center">
+        <Home className="mr-2 h-4 w-4" /> New Prediction
       </Button>
       
       <Button onClick={handleDownloadReport} className="flex items-center">

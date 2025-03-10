@@ -1,101 +1,121 @@
-
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PredictionCard from './results/PredictionCard';
 import PropertyStats from './results/PropertyStats';
 import PriceHistoryChart from './results/PriceHistoryChart';
 import ActionButtons from './results/ActionButtons';
 import { formatCurrency } from '@/utils/formatters';
+import { toast } from 'sonner';
+
+interface PredictionResult {
+  status: string;
+  prediction: {
+    predictedPrice: number;
+    confidence: number;
+    priceRange: {
+      lower: number;
+      upper: number;
+    };
+    pricePerSqFt: number;
+    trendData: Array<{
+      month: string;
+      price: number;
+    }>;
+  };
+  inputSummary: {
+    propertySize: string;
+    bedBath: string;
+    yearBuilt: string;
+    location: string;
+  };
+}
+
+interface HouseData {
+  bedrooms: number;
+  bathrooms: number;
+  squareFeet: number;
+  yearBuilt: number;
+  neighborhood: string;
+  condition: string;
+  hasGarage: boolean;
+  hasPool: boolean;
+}
 
 const ResultsDisplay = () => {
-  const [predictedPrice, setPredictedPrice] = useState<number>(0);
-  const [priceRange, setPriceRange] = useState<{min: number, max: number}>({min: 0, max: 0});
-  const [confidence, setConfidence] = useState<number>(0);
-  const [propertyDetails, setPropertyDetails] = useState({
-    pricePerSqft: 0,
-    size: 0,
-    type: '',
-    age: 0
-  });
-  const [priceHistory, setPriceHistory] = useState<Array<{month: string, value: number}>>([]);
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [predictionResult, setPredictionResult] = useState<PredictionResult | null>(null);
+  const [houseData, setHouseData] = useState<HouseData | null>(null);
 
   useEffect(() => {
-    // Simulate loading data from local storage or API
     const loadResults = () => {
-      // Get prediction results from localStorage if available
-      const savedResults = localStorage.getItem('predictionResults');
-      
-      if (savedResults) {
-        const results = JSON.parse(savedResults);
+      try {
+        // Get prediction results and house data from sessionStorage
+        const savedResult = sessionStorage.getItem('predictionResult');
+        const savedHouseData = sessionStorage.getItem('houseData');
         
-        // Set the predicted price
-        setPredictedPrice(results.price || 425000);
+        if (!savedResult || !savedHouseData) {
+          throw new Error('No prediction results found');
+        }
         
-        // Set price range (typically within 10% of prediction)
-        const minPrice = Math.round((results.price || 425000) * 0.9);
-        const maxPrice = Math.round((results.price || 425000) * 1.1);
-        setPriceRange({ min: minPrice, max: maxPrice });
+        const result = JSON.parse(savedResult) as PredictionResult;
+        const house = JSON.parse(savedHouseData) as HouseData;
         
-        // Set confidence level
-        setConfidence(results.confidence || 85);
+        if (result.status !== 'success') {
+          throw new Error('Invalid prediction result');
+        }
         
-        // Set property details
-        setPropertyDetails({
-          pricePerSqft: results.pricePerSqft || Math.round((results.price || 425000) / (results.squareFeet || 1800)),
-          size: results.squareFeet || 1800,
-          type: `${results.bedrooms || 3}BR/${results.bathrooms || 2}BA`,
-          age: new Date().getFullYear() - (results.yearBuilt || 2000)
-        });
-      } else {
-        // If no saved results, use demo data
-        setPredictedPrice(425000);
-        setPriceRange({ min: 380000, max: 470000 });
-        setConfidence(85);
-        setPropertyDetails({
-          pricePerSqft: 236,
-          size: 1800,
-          type: '3BR/2BA',
-          age: new Date().getFullYear() - 2000
-        });
+        setPredictionResult(result);
+        setHouseData(house);
+        
+      } catch (error) {
+        console.error('Error loading results:', error);
+        toast.error('Failed to load prediction results');
+        navigate('/predict');
+      } finally {
+        setLoading(false);
       }
-      
-      // Generate price history data
-      generatePriceHistoryData();
     };
     
     loadResults();
-  }, []);
+  }, [navigate]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-housewise-600"></div>
+      </div>
+    );
+  }
+
+  if (!predictionResult || !houseData) {
+    return null;
+  }
+
+  const { prediction, inputSummary } = predictionResult;
   
-  const generatePriceHistoryData = () => {
-    const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-    ];
-    
-    const currentMonth = new Date().getMonth();
-    const historyData = [];
-    
-    // Generate last 12 months of data
-    for (let i = 0; i < 12; i++) {
-      const monthIndex = (currentMonth - 11 + i) % 12;
-      const monthName = months[monthIndex < 0 ? monthIndex + 12 : monthIndex];
-      
-      // Base value around predicted price with some random fluctuation
-      const baseValue = predictedPrice * (0.85 + (i * 0.02));
-      const randomFactor = 1 + (Math.random() * 0.1 - 0.05);
-      const value = Math.round(baseValue * randomFactor);
-      
-      historyData.push({ month: monthName, value });
-    }
-    
-    setPriceHistory(historyData);
+  const propertyDetails = {
+    pricePerSqft: prediction.pricePerSqFt,
+    size: houseData.squareFeet,
+    type: inputSummary.bedBath,
+    location: inputSummary.location,
+    age: new Date().getFullYear() - houseData.yearBuilt,
+    condition: houseData.condition,
+    features: [
+      houseData.hasGarage ? 'Garage' : null,
+      houseData.hasPool ? 'Pool' : null
+    ].filter(Boolean)
   };
 
   return (
     <div className="space-y-8">
       <PredictionCard 
-        predictedPrice={predictedPrice}
-        priceRange={priceRange}
-        confidence={confidence}
+        predictedPrice={prediction.predictedPrice}
+        priceRange={{
+          min: prediction.priceRange.lower,
+          max: prediction.priceRange.upper
+        }}
+        confidence={prediction.confidence}
         formatCurrency={formatCurrency}
       />
       
@@ -105,11 +125,19 @@ const ResultsDisplay = () => {
       />
       
       <PriceHistoryChart 
-        priceHistory={priceHistory}
+        priceHistory={prediction.trendData.map(item => ({
+          month: item.month,
+          value: item.price
+        }))}
         formatCurrency={formatCurrency}
       />
-      
-      <ActionButtons />
+      <ActionButtons 
+        onNewPrediction={() => {
+          sessionStorage.removeItem('predictionResult');
+          sessionStorage.removeItem('houseData');
+          navigate('/predict');
+        }}
+      />
     </div>
   );
 };

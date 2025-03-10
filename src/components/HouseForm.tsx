@@ -1,4 +1,3 @@
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -17,14 +16,17 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { toast } from "sonner";
+import { useState } from "react";
+
+const API_URL = "http://10.11.16.89:5000";
 
 const formSchema = z.object({
-  bedrooms: z.number().min(1).max(10),
-  bathrooms: z.number().min(1).max(10),
-  squareFeet: z.number().min(500).max(10000),
-  lotSize: z.number().min(0.1).max(5),
-  yearBuilt: z.number().min(1900).max(new Date().getFullYear()),
-  neighborhood: z.string().min(1),
+  bedrooms: z.number().min(1, "At least 1 bedroom required").max(10, "Maximum 10 bedrooms"),
+  bathrooms: z.number().min(1, "At least 1 bathroom required").max(10, "Maximum 10 bathrooms"),
+  squareFeet: z.number().min(500, "Minimum 500 sq ft").max(10000, "Maximum 10,000 sq ft"),
+  lotSize: z.number().min(0.1, "Minimum 0.1 acres").max(5, "Maximum 5 acres"),
+  yearBuilt: z.number().min(1900, "Year must be 1900 or later").max(new Date().getFullYear(), "Cannot be future year"),
+  neighborhood: z.string().min(1, "Please select a neighborhood"),
   condition: z.enum(["poor", "fair", "good", "excellent"]),
   hasGarage: z.boolean().default(false),
   hasPool: z.boolean().default(false),
@@ -34,6 +36,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 const HouseForm = () => {
   const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Default values for the form
   const defaultValues: Partial<FormValues> = {
@@ -42,6 +45,7 @@ const HouseForm = () => {
     squareFeet: 1800,
     lotSize: 0.25,
     yearBuilt: 2000,
+    neighborhood: "downtown",
     condition: "good",
     hasGarage: true,
     hasPool: false,
@@ -53,26 +57,44 @@ const HouseForm = () => {
   });
 
   const onSubmit = async (data: FormValues) => {
-    // In a real app, we would send this data to the backend
-    console.log("Form data:", data);
+    setIsSubmitting(true);
     
-    // For now, we'll simulate a backend request with a timeout
-    toast.promise(
-      new Promise(resolve => setTimeout(resolve, 1500)),
-      {
-        loading: "Analyzing property data...",
-        success: "Analysis complete!",
-        error: "Error analyzing data",
+    try {
+      const response = await fetch(`${API_URL}/predict`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        credentials: 'include',
+        mode: 'cors',
+        body: JSON.stringify(data),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to get prediction');
       }
-    );
-    
-    // Store the form data in session storage to use on the results page
-    sessionStorage.setItem("houseData", JSON.stringify(data));
-    
-    // Wait briefly then navigate to results
-    setTimeout(() => {
+      
+      const result = await response.json();
+      
+      if (result.status === 'error') {
+        throw new Error(result.error);
+      }
+      
+      // Store the prediction result
+      sessionStorage.setItem("predictionResult", JSON.stringify(result));
+      sessionStorage.setItem("houseData", JSON.stringify(data));
+      
+      toast.success("Analysis complete!");
       navigate("/results");
-    }, 2000);
+      
+    } catch (error) {
+      console.error('Prediction error:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to get prediction');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -90,6 +112,7 @@ const HouseForm = () => {
                     type="number"
                     {...field}
                     onChange={e => field.onChange(parseInt(e.target.value))}
+                    disabled={isSubmitting}
                   />
                 </FormControl>
                 <FormMessage />
@@ -109,6 +132,7 @@ const HouseForm = () => {
                     step="0.5"
                     {...field}
                     onChange={e => field.onChange(parseFloat(e.target.value))}
+                    disabled={isSubmitting}
                   />
                 </FormControl>
                 <FormMessage />
@@ -128,6 +152,7 @@ const HouseForm = () => {
                   type="number"
                   {...field}
                   onChange={e => field.onChange(parseInt(e.target.value))}
+                  disabled={isSubmitting}
                 />
               </FormControl>
               <FormDescription>
@@ -151,6 +176,7 @@ const HouseForm = () => {
                   step={0.05}
                   defaultValue={[field.value]}
                   onValueChange={(values) => field.onChange(values[0])}
+                  disabled={isSubmitting}
                 />
               </FormControl>
               <FormMessage />
@@ -169,6 +195,7 @@ const HouseForm = () => {
                   type="number"
                   {...field}
                   onChange={e => field.onChange(parseInt(e.target.value))}
+                  disabled={isSubmitting}
                 />
               </FormControl>
               <FormMessage />
@@ -185,6 +212,7 @@ const HouseForm = () => {
               <Select
                 onValueChange={field.onChange}
                 defaultValue={field.value}
+                disabled={isSubmitting}
               >
                 <FormControl>
                   <SelectTrigger>
@@ -215,6 +243,7 @@ const HouseForm = () => {
               <Select
                 onValueChange={field.onChange}
                 defaultValue={field.value}
+                disabled={isSubmitting}
               >
                 <FormControl>
                   <SelectTrigger>
@@ -250,7 +279,8 @@ const HouseForm = () => {
                     type="checkbox"
                     checked={field.value}
                     onChange={field.onChange}
-                    className="w-6 h-6 text-housewise-600 rounded"
+                    disabled={isSubmitting}
+                    className="h-6 w-6 rounded border-gray-300"
                   />
                 </FormControl>
               </FormItem>
@@ -263,7 +293,7 @@ const HouseForm = () => {
             render={({ field }) => (
               <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                 <div className="space-y-0.5">
-                  <FormLabel className="text-base">Swimming Pool</FormLabel>
+                  <FormLabel className="text-base">Pool</FormLabel>
                   <FormDescription>
                     Does the property have a pool?
                   </FormDescription>
@@ -273,16 +303,21 @@ const HouseForm = () => {
                     type="checkbox"
                     checked={field.value}
                     onChange={field.onChange}
-                    className="w-6 h-6 text-housewise-600 rounded"
+                    disabled={isSubmitting}
+                    className="h-6 w-6 rounded border-gray-300"
                   />
                 </FormControl>
               </FormItem>
             )}
           />
         </div>
-        
-        <Button type="submit" className="w-full">
-          Get Price Prediction
+
+        <Button 
+          type="submit" 
+          className="w-full"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Analyzing..." : "Get Price Estimate"}
         </Button>
       </form>
     </Form>

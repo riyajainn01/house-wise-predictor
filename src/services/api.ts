@@ -2,8 +2,9 @@
 import { toast } from "sonner";
 
 // Base URL for our API
-const API_URL = "http://localhost:5000";
-
+// 
+const API_URL = "http://10.11.16.89:5000/";
+// const API_URL = "https://housewisepredictor.onrender.com";
 // Types
 export interface HouseData {
   bedrooms: number;
