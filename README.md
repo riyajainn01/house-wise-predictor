@@ -1,69 +1,156 @@
-# Welcome to your Lovable project
+# HouseWise Predictor
 
-## Project info
+A modern web application that uses machine learning to predict house prices based on property features. Built with React, TypeScript, and Flask.
 
-**URL**: https://lovable.dev/projects/1bf0ed00-aa29-447e-aa81-8d2cc7ae224f
+## 🌟 Features
 
-## How can I edit this code?
+- **AI-Powered Price Predictions**: Get accurate property valuations using machine learning
+- **Interactive Form**: Easy-to-use interface for entering property details
+- **Detailed Results**: View predicted price, confidence level, and price trends
+- **PDF Reports**: Generate professional property valuation reports
+- **Responsive Design**: Works seamlessly on desktop and mobile devices
 
-There are several ways of editing your application.
+## 🚀 Live Demo
 
-**Use Lovable**
+- Frontend: [https://housewise-predictor-32.vercel.app](https://housewise-predictor-32.vercel.app)
+- Backend API: [https://housewisepredictor.onrender.com](https://housewisepredictor.onrender.com)
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/1bf0ed00-aa29-447e-aa81-8d2cc7ae224f) and start prompting.
+## 🛠️ Tech Stack
 
-Changes made via Lovable will be committed automatically to this repo.
+### Frontend
+- React with TypeScript
+- Vite for build tooling
+- Tailwind CSS for styling
+- shadcn/ui for UI components
+- React Query for data fetching
+- React Hook Form for form handling
+- jsPDF for report generation
 
-**Use your preferred IDE**
+### Backend
+- Flask for the API server
+- scikit-learn for machine learning
+- pandas for data processing
+- joblib for model serialization
+- Flask-CORS for CORS handling
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 📦 Installation
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Frontend Setup
 
-Follow these steps:
+```bash
+# Clone the repository
+git clone <repository-url>
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# Navigate to project directory
+cd housewise-predictor-32
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Install dependencies
+npm install
 
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### Backend Setup
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+# Navigate to backend directory
+cd backend
 
-**Use GitHub Codespaces**
+# Create virtual environment
+python -m venv venv
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+# Activate virtual environment
+# On Windows:
+venv\Scripts\activate
+# On macOS/Linux:
+source venv/bin/activate
 
-## What technologies are used for this project?
+# Install dependencies
+pip install -r requirements.txt
 
-This project is built with .
+# Start the server
+python app.py
+```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 💻 Usage
 
-## How can I deploy this project?
+1. Fill in property details:
+   - Number of bedrooms and bathrooms
+   - Square footage and lot size
+   - Year built
+   - Neighborhood and condition
+   - Additional features (garage, pool)
 
-Simply open [Lovable](https://lovable.dev/projects/1bf0ed00-aa29-447e-aa81-8d2cc7ae224f) and click on Share -> Publish.
+2. Submit the form to get:
+   - Predicted property value
+   - Confidence level
+   - Price range
+   - Historical price trends
+   - Detailed property analysis
 
-## I want to use a custom domain - is that possible?
+3. Download a professional PDF report or share results
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+## 🔧 API Endpoints
+
+### POST /predict
+Predicts property value based on input features.
+
+**Request Body:**
+```json
+{
+  "bedrooms": number,
+  "bathrooms": number,
+  "squareFeet": number,
+  "lotSize": number,
+  "yearBuilt": number,
+  "neighborhood": string,
+  "condition": "poor" | "fair" | "good" | "excellent",
+  "hasGarage": boolean,
+  "hasPool": boolean
+}
+```
+
+**Response:**
+```json
+{
+  "status": "success",
+  "prediction": {
+    "predictedPrice": number,
+    "confidence": number,
+    "priceRange": {
+      "lower": number,
+      "upper": number
+    },
+    "pricePerSqFt": number,
+    "trendData": Array<{month: string, price: number}>
+  },
+  "inputSummary": {
+    "propertySize": string,
+    "bedBath": string,
+    "yearBuilt": string,
+    "location": string
+  }
+}
+```
+
+### GET /health
+Health check endpoint to verify API status.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 👥 Authors
+
+- Initial work - [Your Name]
+
+## 🙏 Acknowledgments
+
+- Built with [React](https://reactjs.org/)
+- UI components from [shadcn/ui](https://ui.shadcn.com/)
+- Machine learning with [scikit-learn](https://scikit-learn.org/)
