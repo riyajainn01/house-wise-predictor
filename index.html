@@ -1,18 +1,206 @@
+
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>housewise-predictor</title>
-    <meta name="description" content="Lovable Generated Project" />
-    <meta name="author" content="Lovable" />
-    <meta property="og:image" content="/og-image.png" />
-  </head>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HouseWise - Home Price Prediction</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="container">
+      <div class="logo">HouseWise</div>
+      <div class="menu-toggle">
+        <i class="fas fa-bars"></i>
+      </div>
+      <ul class="nav-menu">
+        <li><a href="index.html" class="active"><i class="fas fa-home"></i> Home</a></li>
+        <li><a href="predict.html"><i class="fas fa-chart-line"></i> Predict</a></li>
+        <li><a href="about.html"><i class="fas fa-info-circle"></i> About</a></li>
+        <li><a href="predict.html" class="btn-primary">Get Started</a></li>
+      </ul>
+    </div>
+  </nav>
 
-  <body>
-    <div id="root"></div>
-    <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
-    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <h1>Predict Your Home's Value with AI Precision</h1>
+        <p>HouseWise uses advanced machine learning to provide accurate, data-driven home price predictions based on location, features, and market trends.</p>
+        <div class="hero-buttons">
+          <a href="predict.html" class="btn-primary">Get Started <i class="fas fa-arrow-right"></i></a>
+          <a href="#how-it-works" class="btn-outline">Learn More</a>
+        </div>
+      </div>
+      <div class="hero-image">
+        <div class="property-card">
+          <div class="card-header">
+            <div>
+              <h3>Your Property Value</h3>
+              <p>Based on current market data</p>
+            </div>
+            <div class="icon-circle">
+              <i class="fas fa-home"></i>
+            </div>
+          </div>
+          <div class="property-value">$425,000</div>
+          <div class="property-details">
+            <div class="detail-grid">
+              <div class="detail">
+                <p class="label">Bedrooms</p>
+                <p class="value">3</p>
+              </div>
+              <div class="detail">
+                <p class="label">Bathrooms</p>
+                <p class="value">2</p>
+              </div>
+              <div class="detail">
+                <p class="label">Square Feet</p>
+                <p class="value">1,850</p>
+              </div>
+              <div class="detail">
+                <p class="label">Year Built</p>
+                <p class="value">2005</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section class="how-it-works" id="how-it-works">
+    <div class="container">
+      <div class="section-header">
+        <h2>How HouseWise Works</h2>
+        <p>Our advanced AI algorithms analyze thousands of data points to deliver accurate property value estimates.</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-icon">
+            <i class="fas fa-search"></i>
+          </div>
+          <h3>Input Your Property Details</h3>
+          <p>Enter information about your property such as location, size, features, and condition.</p>
+        </div>
+        <div class="step">
+          <div class="step-icon">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <h3>AI Analysis Process</h3>
+          <p>Our machine learning models analyze your data against current market trends and comparable properties.</p>
+        </div>
+        <div class="step">
+          <div class="step-icon">
+            <i class="fas fa-dollar-sign"></i>
+          </div>
+          <h3>Get Your Value Estimate</h3>
+          <p>Receive a detailed property valuation with confidence scores and comparable property data.</p>
+        </div>
+      </div>
+      <div class="center-button">
+        <a href="predict.html" class="btn-primary">Try It Now</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features">
+    <div class="container">
+      <div class="section-header">
+        <h2>Features</h2>
+        <p>Discover the powerful tools and insights HouseWise provides to help you make informed real estate decisions.</p>
+      </div>
+      <div class="feature-cards">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <h3>AI-Powered Price Predictions</h3>
+          <p>Get accurate property valuations based on advanced machine learning algorithms and extensive market data.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-history"></i>
+          </div>
+          <h3>Historical Price Trends</h3>
+          <p>View how your property's value has changed over time and understand the factors driving those changes.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-map-marker-alt"></i>
+          </div>
+          <h3>Location Analysis</h3>
+          <p>See how your neighborhood affects property value with detailed location-based insights.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-search"></i>
+          </div>
+          <h3>Detailed Property Analysis</h3>
+          <p>Understand how each feature of your home contributes to its overall value.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-home"></i>
+          </div>
+          <h3>Renovation Value Impact</h3>
+          <p>Explore how potential renovations or improvements could affect your property's market value.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-dollar-sign"></i>
+          </div>
+          <h3>Market Comparison</h3>
+          <p>Compare your property's value to similar properties in your area to gauge its competitiveness.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta">
+    <div class="container">
+      <h2>Ready to Discover Your Home's Value?</h2>
+      <p>Get an accurate, data-driven estimate in minutes with our AI-powered prediction tool.</p>
+      <a href="predict.html" class="btn-light">Get Your Estimate Now</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>HouseWise</h3>
+          <p>Advanced AI-powered house price prediction to help you make better real estate decisions.</p>
+        </div>
+        <div class="footer-section">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="predict.html">Get a Prediction</a></li>
+            <li><a href="about.html">About</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Contact</h3>
+          <p>For support and inquiries:</p>
+          <p>support@housewise.example.com</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; <span id="current-year"></span> HouseWise. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
 </html>

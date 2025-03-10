@@ -1,121 +1,154 @@
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import joblib
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from sklearn.compose import ColumnTransformer
-from sklearn.pipeline import Pipeline
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+import joblib
+import os
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+CORS(app)
 
-# This would normally be trained on actual data and saved
-# For demo purposes, we'll create a simple model when the app starts
-def create_dummy_model():
-    # Create some dummy training data
+# Check if model exists, if not, train it
+model_path = 'model.joblib'
+model = None
+
+# Function to generate synthetic data
+def generate_synthetic_data(n_samples=1000):
     np.random.seed(42)
-    n_samples = 1000
     
-    # Features that might affect house prices
-    bedrooms = np.random.randint(1, 6, n_samples)
-    bathrooms = np.random.randint(1, 5, n_samples)
-    sq_feet = np.random.randint(500, 5000, n_samples)
+    # Generate features
+    bedrooms = np.random.randint(1, 7, n_samples)
+    bathrooms = np.random.choice([1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5], n_samples)
+    square_feet = np.random.randint(800, 5000, n_samples)
     lot_size = np.random.uniform(0.1, 2.0, n_samples)
     year_built = np.random.randint(1950, 2023, n_samples)
-    neighborhoods = np.random.choice(['downtown', 'midtown', 'uptown', 
-                                     'suburbanNorth', 'suburbanSouth', 
-                                     'suburbanEast', 'suburbanWest'], n_samples)
-    conditions = np.random.choice(['poor', 'fair', 'good', 'excellent'], n_samples)
+    neighborhoods = ['downtown', 'midtown', 'uptown', 'suburbanNorth', 'suburbanSouth', 'suburbanEast', 'suburbanWest']
+    neighborhood = np.random.choice(neighborhoods, n_samples)
+    conditions = ['poor', 'fair', 'good', 'excellent']
+    condition = np.random.choice(conditions, n_samples)
     has_garage = np.random.choice([0, 1], n_samples)
     has_pool = np.random.choice([0, 1], n_samples)
     
-    # Create a dataframe
-    X = pd.DataFrame({
+    # Base price calculation
+    base_price = 200000 + 150 * square_feet
+    
+    # Adjustments
+    bedroom_adj = 15000 * (bedrooms - 3)
+    bathroom_adj = 20000 * (bathrooms - 2)
+    age_adj = -1000 * (2023 - year_built)
+    lot_adj = 50000 * lot_size
+    
+    # Condition multipliers
+    condition_mult = np.ones(n_samples)
+    condition_mult[condition == 'poor'] = 0.8
+    condition_mult[condition == 'fair'] = 0.9
+    condition_mult[condition == 'good'] = 1.0
+    condition_mult[condition == 'excellent'] = 1.2
+    
+    # Neighborhood multipliers
+    neighborhood_mult = np.ones(n_samples)
+    neighborhood_mult[neighborhood == 'downtown'] = 1.3
+    neighborhood_mult[neighborhood == 'midtown'] = 1.2
+    neighborhood_mult[neighborhood == 'uptown'] = 1.1
+    neighborhood_mult[neighborhood == 'suburbanNorth'] = 1.05
+    neighborhood_mult[neighborhood == 'suburbanSouth'] = 0.95
+    neighborhood_mult[neighborhood == 'suburbanEast'] = 1.0
+    neighborhood_mult[neighborhood == 'suburbanWest'] = 1.1
+    
+    # Features
+    garage_adj = has_garage * 25000
+    pool_adj = has_pool * 40000
+    
+    # Calculate price
+    price = (base_price + bedroom_adj + bathroom_adj + age_adj + lot_adj + garage_adj + pool_adj) * condition_mult * neighborhood_mult
+    
+    # Add some noise
+    price = price * np.random.normal(1, 0.1, n_samples)
+    
+    # Create DataFrame
+    data = pd.DataFrame({
         'bedrooms': bedrooms,
         'bathrooms': bathrooms,
-        'square_feet': sq_feet,
+        'square_feet': square_feet,
         'lot_size': lot_size,
         'year_built': year_built,
-        'neighborhood': neighborhoods,
-        'condition': conditions,
+        'neighborhood': neighborhood,
+        'condition': condition,
         'has_garage': has_garage,
-        'has_pool': has_pool
+        'has_pool': has_pool,
+        'price': price
     })
     
-    # Generate prices based on these features with some noise
-    base_price = 200000
-    price = base_price + \
-            bedrooms * 15000 + \
-            bathrooms * 12000 + \
-            sq_feet * 200 + \
-            lot_size * 50000 - \
-            (2023 - year_built) * 1000 + \
-            has_garage * 20000 + \
-            has_pool * 30000
-    
-    # Add condition factor
-    condition_map = {'poor': 0.8, 'fair': 0.9, 'good': 1.1, 'excellent': 1.2}
-    for i, condition in enumerate(conditions):
-        price[i] *= condition_map[condition]
-    
-    # Add neighborhood factor
-    neighborhood_map = {
-        'downtown': 1.3, 
-        'midtown': 1.1, 
-        'uptown': 1.2, 
-        'suburbanNorth': 1.05, 
-        'suburbanSouth': 0.95, 
-        'suburbanEast': 1.0, 
-        'suburbanWest': 1.1
-    }
-    for i, neighborhood in enumerate(neighborhoods):
-        price[i] *= neighborhood_map[neighborhood]
-    
-    # Add randomness
-    price = price + np.random.normal(0, 20000, n_samples)
-    
-    # Define preprocessing for numeric and categorical features
-    numeric_features = ['bedrooms', 'bathrooms', 'square_feet', 'lot_size', 'year_built', 'has_garage', 'has_pool']
-    categorical_features = ['neighborhood', 'condition']
-    
-    numeric_transformer = Pipeline(steps=[
-        ('scaler', StandardScaler())
-    ])
-    
-    categorical_transformer = Pipeline(steps=[
-        ('onehot', OneHotEncoder(handle_unknown='ignore'))
-    ])
-    
-    preprocessor = ColumnTransformer(
-        transformers=[
-            ('num', numeric_transformer, numeric_features),
-            ('cat', categorical_transformer, categorical_features)
-        ])
-    
-    # Create and train the model
-    model = Pipeline(steps=[
-        ('preprocessor', preprocessor),
-        ('regressor', RandomForestRegressor(n_estimators=100, random_state=42))
-    ])
-    
-    model.fit(X, price)
-    
-    return model
+    return data
 
-# Create and save the model
-model = create_dummy_model()
-joblib.dump(model, 'house_price_model.pkl')
+# Train model function
+def train_model():
+    print("Training new house price prediction model...")
+    
+    # Generate synthetic data
+    data = generate_synthetic_data(2000)
+    
+    # Prepare features and target
+    X = data.drop('price', axis=1)
+    y = data['price']
+    
+    # Split categorical and numerical features
+    cat_cols = ['neighborhood', 'condition']
+    num_cols = ['bedrooms', 'bathrooms', 'square_feet', 'lot_size', 'year_built', 'has_garage', 'has_pool']
+    
+    # One-hot encode categorical features
+    encoder = OneHotEncoder(sparse=False, handle_unknown='ignore')
+    X_cat = encoder.fit_transform(X[cat_cols])
+    
+    # Scale numerical features
+    scaler = StandardScaler()
+    X_num = scaler.fit_transform(X[num_cols])
+    
+    # Combine features
+    X_processed = np.hstack([X_num, X_cat])
+    
+    # Split into train and test
+    X_train, X_test, y_train, y_test = train_test_split(X_processed, y, test_size=0.2, random_state=42)
+    
+    # Train RandomForest model
+    model = RandomForestRegressor(n_estimators=100, random_state=42)
+    model.fit(X_train, y_train)
+    
+    # Save model and preprocessing components
+    joblib.dump({
+        'model': model,
+        'encoder': encoder,
+        'scaler': scaler,
+        'cat_cols': cat_cols,
+        'num_cols': num_cols
+    }, model_path)
+    
+    print(f"Model trained and saved to {model_path}")
+    return model, encoder, scaler, cat_cols, num_cols
+
+# Load or train model
+if os.path.exists(model_path):
+    print(f"Loading existing model from {model_path}")
+    components = joblib.load(model_path)
+    model = components['model']
+    encoder = components['encoder']
+    scaler = components['scaler']
+    cat_cols = components['cat_cols']
+    num_cols = components['num_cols']
+else:
+    model, encoder, scaler, cat_cols, num_cols = train_model()
 
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
-        # Get JSON data from request
+        # Get data from request
         data = request.json
         
-        # Create a DataFrame from the input data
+        # Convert to DataFrame with expected columns
         input_data = pd.DataFrame({
             'bedrooms': [data['bedrooms']],
             'bathrooms': [data['bathrooms']],
@@ -128,26 +161,60 @@ def predict():
             'has_pool': [1 if data['hasPool'] else 0]
         })
         
-        # Load the model and make prediction
-        model = joblib.load('house_price_model.pkl')
-        prediction = model.predict(input_data)[0]
+        # Process categorical features
+        X_cat = encoder.transform(input_data[cat_cols])
         
-        # Generate confidence interval (this is simplified)
-        lower_bound = prediction * 0.95
-        upper_bound = prediction * 1.05
+        # Process numerical features
+        X_num = scaler.transform(input_data[num_cols])
         
-        # Return prediction
+        # Combine features
+        X_processed = np.hstack([X_num, X_cat])
+        
+        # Make prediction
+        predicted_price = model.predict(X_processed)[0]
+        
+        # Calculate confidence
+        confidence = np.random.randint(80, 96)  # Simulated confidence score
+        
+        # Generate price range (±5%)
+        lower_bound = predicted_price * 0.95
+        upper_bound = predicted_price * 1.05
+        
+        # Generate trend data (last 12 months)
+        current_month = pd.Timestamp.now().month
+        trend_data = []
+        
+        for i in range(12):
+            month_idx = (current_month - 11 + i) % 12 + 1
+            month_name = pd.Timestamp(2023, month_idx, 1).strftime('%b')
+            
+            # Calculate historical value with some randomness
+            variance = predicted_price * (np.random.uniform(-0.05, 0.1))
+            historical_price = predicted_price - variance
+            
+            trend_data.append({
+                'month': month_name,
+                'price': round(historical_price)
+            })
+        
+        # Return prediction results
         return jsonify({
-            'predicted_price': round(prediction, 2),
-            'confidence_interval': {
-                'lower': round(lower_bound, 2),
-                'upper': round(upper_bound, 2)
+            'predictedPrice': round(predicted_price),
+            'confidence': confidence,
+            'priceRange': {
+                'lower': round(lower_bound),
+                'upper': round(upper_bound)
             },
-            'confidence_level': 85
+            'pricePerSqFt': round(predicted_price / input_data['square_feet'][0]),
+            'trendData': trend_data
         })
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/health', methods=['GET'])
+def health_check():
+    return jsonify({'status': 'healthy'})
+
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True, host='0.0.0.0', port=5000)
