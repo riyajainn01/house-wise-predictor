@@ -2,16 +2,12 @@
 import { Home, Search, TrendingUp, History, DollarSign, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import HouseHero from "@/components/HouseHero";
 import FeatureCard from "@/components/FeatureCard";
 
 const Index = () => {
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
-      
       <main className="flex-grow">
         {/* Hero Section */}
         <HouseHero />
@@ -129,8 +125,6 @@ const Index = () => {
           </div>
         </section>
       </main>
-      
-      <Footer />
     </div>
   );
 };

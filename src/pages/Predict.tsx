@@ -1,14 +1,10 @@
 
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import HouseForm from "@/components/HouseForm";
 import { Home } from "lucide-react";
+import HouseForm from "@/components/HouseForm";
 
 const Predict = () => {
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
-      
       <main className="flex-grow bg-gray-50 py-10">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-white rounded-lg shadow-sm p-6 md:p-8 border border-gray-200">
@@ -26,8 +22,6 @@ const Predict = () => {
           </div>
         </div>
       </main>
-      
-      <Footer />
     </div>
   );
 };

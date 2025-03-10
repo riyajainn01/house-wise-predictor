@@ -2,6 +2,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Home, ArrowRight } from 'lucide-react';
+import House3D from './House3D';
 
 const HouseHero = () => {
   return (
@@ -32,45 +33,15 @@ const HouseHero = () => {
           </div>
           
           <div className="hidden md:block">
-            <div className="relative">
+            <div className="relative h-[450px]">
               <div className="absolute -left-4 -top-4 bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20 shadow-xl animate-float">
                 <Home className="h-10 w-10 text-white" />
                 <p className="text-white mt-2 font-semibold">Property Analysis</p>
               </div>
               
-              <div className="bg-white rounded-2xl shadow-2xl p-6 transform rotate-3">
-                <div className="flex justify-between items-start mb-6">
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-900">Your Property Value</h3>
-                    <p className="text-gray-500">Based on current market data</p>
-                  </div>
-                  <div className="bg-housewise-50 p-2 rounded-full">
-                    <Home className="h-6 w-6 text-housewise-600" />
-                  </div>
-                </div>
-                
-                <div className="text-4xl font-bold text-housewise-600 mb-6">$425,000</div>
-                
-                <div className="bg-gray-50 rounded-lg p-4 mb-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-gray-500 text-sm">Bedrooms</p>
-                      <p className="font-semibold">3</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500 text-sm">Bathrooms</p>
-                      <p className="font-semibold">2</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500 text-sm">Square Feet</p>
-                      <p className="font-semibold">1,850</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500 text-sm">Year Built</p>
-                      <p className="font-semibold">2005</p>
-                    </div>
-                  </div>
-                </div>
+              {/* 3D House Component */}
+              <div className="bg-white rounded-2xl overflow-hidden shadow-2xl p-0 transform rotate-3 h-[400px]">
+                <House3D />
               </div>
               
               <div className="absolute -right-4 -bottom-4 bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20 shadow-xl animate-float" style={{ animationDelay: '1s' }}>
