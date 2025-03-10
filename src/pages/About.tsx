@@ -1,14 +1,10 @@
 
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { Building, BookOpen, Users, Code, Lightbulb, PieChart } from "lucide-react";
 
 const About = () => {
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      
-      <main className="flex-grow">
+    <div className="min-h-screen">
+      <main>
         {/* Hero Section */}
         <section className="py-20 gradient-bg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
@@ -149,8 +145,6 @@ const About = () => {
           </div>
         </section>
       </main>
-      
-      <Footer />
     </div>
   );
 };
