@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Download, Share2, Home } from "lucide-react";
+import { generateReport } from "@/utils/reportGenerator";
+import { toast } from "sonner";
 
 interface ActionButtonsProps {
   onNewPrediction: () => void;
@@ -8,26 +10,44 @@ interface ActionButtonsProps {
 
 const ActionButtons = ({ onNewPrediction }: ActionButtonsProps) => {
   const handleDownloadReport = () => {
-    // In a real app, this would generate and download a PDF report
-    console.log("Downloading property report...");
-    // Provide feedback to user
-    alert("Your property report is being prepared for download.");
+    try {
+      // Get prediction results from session storage
+      const savedResult = sessionStorage.getItem('predictionResult');
+      if (!savedResult) {
+        throw new Error('No prediction results found');
+      }
+
+      const result = JSON.parse(savedResult);
+      generateReport(result);
+      toast.success('Report downloaded successfully!');
+    } catch (error) {
+      console.error('Error generating report:', error);
+      toast.error('Failed to generate report');
+    }
   };
 
   const handleShareResults = () => {
-    // In a real app, this would open a share dialog
-    console.log("Sharing property results...");
-    // Example of sharing data
-    if (navigator.share) {
-      navigator.share({
-        title: 'My Property Valuation Results',
-        text: 'Check out my property valuation from HouseWise!',
-        url: window.location.href,
-      })
-      .catch((error) => console.log('Error sharing:', error));
-    } else {
-      // Fallback for browsers that don't support sharing
-      alert("Copy this link to share your results: " + window.location.href);
+    try {
+      if (navigator.share) {
+        navigator.share({
+          title: 'My Property Valuation Results',
+          text: 'Check out my property valuation from HouseWise!',
+          url: window.location.href,
+        })
+        .then(() => toast.success('Shared successfully!'))
+        .catch((error) => {
+          console.error('Error sharing:', error);
+          toast.error('Failed to share');
+        });
+      } else {
+        // Fallback for browsers that don't support sharing
+        navigator.clipboard.writeText(window.location.href)
+          .then(() => toast.success('Link copied to clipboard!'))
+          .catch(() => toast.error('Failed to copy link'));
+      }
+    } catch (error) {
+      console.error('Share error:', error);
+      toast.error('Failed to share results');
     }
   };
 
