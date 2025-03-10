@@ -22,7 +22,7 @@ const About = () => {
               <div>
                 <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Mission</h2>
                 <p className="text-gray-600 mb-6">
-                  At HouseWise, we're committed to bringing transparency and accuracy to property valuation. Our mission is to empower homeowners, buyers, and real estate professionals with precise, data-driven insights into property values.
+                  At HouseWise, we&apos;re committed to bringing transparency and accuracy to property valuation. Our mission is to empower homeowners, buyers, and real estate professionals with precise, data-driven insights into property values.
                 </p>
                 <p className="text-gray-600">
                   Through our innovative AI technology, we analyze thousands of data points from market trends to property features, delivering valuations you can trust for making critical real estate decisions.

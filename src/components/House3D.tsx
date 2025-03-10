@@ -1,10 +1,14 @@
 
 import { useRef, useState, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, useTexture, PerspectiveCamera } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 
-const HouseModel = ({ mousePosition }) => {
+interface HouseModelProps {
+  mousePosition: { x: number; y: number } | null;
+}
+
+const HouseModel = ({ mousePosition }: HouseModelProps) => {
   // Properly type the refs
   const house = useRef<THREE.Group>(null);
   const roof = useRef<THREE.Group>(null);
@@ -219,11 +223,16 @@ const HouseModel = ({ mousePosition }) => {
   );
 };
 
+interface MousePosition {
+  x: number;
+  y: number;
+}
+
 const House3D = () => {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [mousePosition, setMousePosition] = useState<MousePosition | null>(null);
   
   useEffect(() => {
-    const handleMouseMove = (event) => {
+    const handleMouseMove = (event: MouseEvent) => {
       // Normalize mouse position
       setMousePosition({
         x: (event.clientX / window.innerWidth) * 2 - 1,

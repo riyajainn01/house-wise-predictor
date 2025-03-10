@@ -15,7 +15,7 @@ const HouseHero = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
           <div>
             <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight mb-6">
-              Predict Your Home's Value with AI Precision
+              Predict Your Home&apos;s Value with AI Precision
             </h1>
             <p className="text-white/90 text-lg mb-8">
               HouseWise uses advanced machine learning to provide accurate, data-driven home price predictions based on location, features, and market trends.
