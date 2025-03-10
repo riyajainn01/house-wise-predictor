@@ -8,11 +8,14 @@ import traceback
 app = Flask(__name__)
 CORS(app, resources={
     r"/*": {
-        "origins": ["http://localhost:8080", "http://127.0.0.1:8080", 
-                   "http://localhost:5173", "http://127.0.0.1:5173",
-                   "http://10.11.16.89:8080", "http://10.11.16.89:5173"],
+        "origins": [
+            "http://localhost:8080", "http://127.0.0.1:8080",
+            "http://localhost:5173", "http://127.0.0.1:5173",
+            "https://housewise-predictor-32.vercel.app",
+            "https://housewisepredictor.onrender.com"
+        ],
         "methods": ["GET", "POST", "OPTIONS"],
-        "allow_headers": ["Content-Type"],
+        "allow_headers": ["Content-Type", "Authorization"],
         "expose_headers": ["Content-Type"],
         "supports_credentials": True,
         "max_age": 3600

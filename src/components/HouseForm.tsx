@@ -66,13 +66,13 @@ const HouseForm = () => {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
-        credentials: 'include',
         mode: 'cors',
+        credentials: 'include',
         body: JSON.stringify(data),
       });
       
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData = await response.json().catch(() => ({ error: 'Failed to get prediction' }));
         throw new Error(errorData.error || 'Failed to get prediction');
       }
       
