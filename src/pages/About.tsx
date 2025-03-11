@@ -116,31 +116,32 @@ const About = () => {
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               <div className="text-center">
-                <div className="h-40 w-40 rounded-full bg-gray-200 mx-auto mb-4"></div>
-                <h3 className="text-xl font-semibold">Alex Johnson</h3>
+                <img className="h-40 w-40 rounded-full mx-auto mb-4" src="https://avatars.githubusercontent.com/u/125860170?s=400&u=e82f197d0a21f57223e0d867ce558b1a36c2236f&v=4" alt="karik mehta"/>
+                {/* <div className="h-40 w-40 rounded-full bg-gray-200 mx-auto mb-4"></div> */}
+                <h3 className="text-xl font-semibold">karik mehta</h3>
                 <p className="text-housewise-600">Founder & CEO</p>
                 <p className="text-gray-600 mt-2">
                   15+ years in real estate technology and investment
                 </p>
               </div>
               
-              <div className="text-center">
+              {/* <div className="text-center">
                 <div className="h-40 w-40 rounded-full bg-gray-200 mx-auto mb-4"></div>
                 <h3 className="text-xl font-semibold">Samantha Chen</h3>
                 <p className="text-housewise-600">Lead Data Scientist</p>
                 <p className="text-gray-600 mt-2">
                   Expert in predictive modeling and machine learning
                 </p>
-              </div>
+              </div> */}
               
-              <div className="text-center">
+              {/* <div className="text-center">
                 <div className="h-40 w-40 rounded-full bg-gray-200 mx-auto mb-4"></div>
                 <h3 className="text-xl font-semibold">Marcus Williams</h3>
                 <p className="text-housewise-600">Head of Real Estate Analysis</p>
                 <p className="text-gray-600 mt-2">
                   Former appraiser with deep industry knowledge
                 </p>
-              </div>
+              </div> */}
             </div>
           </div>
         </section>
