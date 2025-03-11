@@ -49,7 +49,7 @@ const Footer = () => {
         
         <div className="mt-8 border-t border-gray-200 pt-8 text-center">
           <p className="text-gray-500 text-sm">
-            &copy; {currentYear} HouseWise. All rights reserved. developed ❤️<a target="blank" className="text-housewise-600" href='https://github.com/kartikmehta18'> kartikmehta18</a>
+            &copy; {currentYear} HouseWise. All rights reserved. developed ❤️<a target="_blank" className="text-housewise-600" href='https://github.com/kartikmehta18'> kartikmehta18</a>
           </p>
         </div>
       </div>
