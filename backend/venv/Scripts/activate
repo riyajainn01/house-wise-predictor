@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\Users\dell\OneDrive\Desktop\jklu\housewise-predictor-32\backend\venv"
+VIRTUAL_ENV="C:\Users\LENOVO\OneDrive\Desktop\project(py+react)\housewise-predictor-32\backend\venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

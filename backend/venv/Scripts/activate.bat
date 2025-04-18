@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set VIRTUAL_ENV=C:\Users\dell\OneDrive\Desktop\jklu\housewise-predictor-32\backend\venv
+set VIRTUAL_ENV=C:\Users\LENOVO\OneDrive\Desktop\project(py+react)\housewise-predictor-32\backend\venv
 
 if not defined PROMPT set PROMPT=$P$G
 
